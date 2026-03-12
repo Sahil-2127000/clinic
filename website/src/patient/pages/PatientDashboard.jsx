@@ -56,7 +56,7 @@ function PatientDashboard() {
   });
 
   // CANCELLED
-  const cancelled = myAppointments.filter((a) => a.status === "cancelled");
+  const cancelled = myAppointments.filter((a) => a.status === "rejected");
 
   // sort upcoming appointments by date & time
   const nextAppointment = upcoming.sort((a, b) => {

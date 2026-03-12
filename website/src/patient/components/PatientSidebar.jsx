@@ -4,12 +4,13 @@ function PatientSidebar() {
   const navigate = useNavigate();
 
   const logout = () => {
-    localStorage.removeItem("currentUser");
-    navigate("/");
-  };
+localStorage.removeItem("currentUser");
+window.dispatchEvent(new Event("appointmentsUpdated"));
+navigate("/");
+};
 
   return (
-    <div className="w-64 h-screen bg-white shadow-lg p-6 sticky">
+    <div className="w-64 h-screen bg-white shadow-lg p-6 sticky top-0">
       <h2 className="text-2xl font-bold text-blue-600 mb-8">Patient Portal</h2>
 
       <div className="flex flex-col space-y-3">

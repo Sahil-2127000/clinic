@@ -1,47 +1,112 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import DoctorSidebar from "../components/DoctorSidebar"
 
 function DoctorProfile(){
 
-const [firstName,setFirstName] = useState("")
-const [lastName,setLastName] = useState("")
-const [email,setEmail] = useState("")
-const [designation,setDesignation] = useState("")
-const [photo,setPhoto] = useState(null)
+const user = JSON.parse(localStorage.getItem("currentUser"))
 
-const saveProfile = ()=>{
+const [profile,setProfile] = useState(null)
+const [editMode,setEditMode] = useState(false)
 
-const profile = {
-firstName,
-lastName,
-email,
-designation,
-photo
+const [formData,setFormData] = useState({
+firstName:"",
+lastName:"",
+email:user?.email || "",
+phone:"",
+specialization:"",
+experience:"",
+clinicAddress:"",
+photo:""
+})
+
+useEffect(()=>{
+
+const savedProfile = JSON.parse(localStorage.getItem("doctorProfile"))
+
+if(savedProfile){
+setProfile(savedProfile)
+setFormData(savedProfile)
+}else{
+setEditMode(true)
 }
 
-localStorage.setItem("doctorProfile",JSON.stringify(profile))
+},[])
 
-alert("Profile Updated")
-
+const handleChange = (e)=>{
+setFormData({
+...formData,
+[e.target.name]:e.target.value
+})
 }
 
-const handlePhoto = (e)=>{
+const handleImage = (e)=>{
 
 const file = e.target.files[0]
+
+if(!file) return
 
 const reader = new FileReader()
 
 reader.onloadend = ()=>{
-setPhoto(reader.result)
+setFormData({
+...formData,
+photo:reader.result
+})
 }
 
 reader.readAsDataURL(file)
 
 }
 
+const handleAvatarUpload = (e)=>{
+
+const file = e.target.files[0]
+
+if(!file) return
+
+const reader = new FileReader()
+
+reader.onloadend = ()=>{
+
+const updatedProfile = {
+...(profile || formData),
+photo:reader.result
+}
+
+localStorage.setItem("doctorProfile",JSON.stringify(updatedProfile))
+
+setProfile(updatedProfile)
+setFormData(updatedProfile)
+
+}
+
+reader.readAsDataURL(file)
+
+}
+
+const triggerFileInput = ()=>{
+document.getElementById("avatarUpload").click()
+}
+
+const saveProfile = ()=>{
+
+localStorage.setItem("doctorProfile",JSON.stringify(formData))
+
+setProfile(formData)
+
+setEditMode(false)
+
+alert("Profile Saved")
+
+}
+
+const editProfile = ()=>{
+setEditMode(true)
+}
+
 return(
 
-<div className="flex min-h-screen bg-gray-50">
+<div className="flex bg-gray-50 min-h-screen">
 
 <DoctorSidebar/>
 
@@ -51,75 +116,230 @@ return(
 Doctor Profile
 </h1>
 
-<div className="bg-white p-6 rounded-xl shadow max-w-lg">
+<div className="bg-white rounded-xl shadow p-8 max-w-4xl">
 
-{/* Photo */}
+{/* VIEW MODE */}
 
-<div className="mb-4">
+{!editMode && profile && (
 
-{photo && (
-<img
-src={photo}
-alt="profile"
-className="w-24 h-24 rounded-full mb-3"
+<div>
+
+<div className="flex items-center justify-between mb-8">
+
+<div className="flex items-center gap-4">
+
+<input
+type="file"
+accept="image/*"
+id="avatarUpload"
+className="hidden"
+onChange={handleAvatarUpload}
 />
-)}
 
-<input type="file" onChange={handlePhoto}/>
+<div
+onClick={triggerFileInput}
+className="cursor-pointer"
+>
+
+{profile.photo ? (
+
+<img
+src={profile.photo}
+className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+/>
+
+) : (
+
+<div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold">
+{profile.firstName?.charAt(0)}
+</div>
+
+)}
 
 </div>
 
-<label className="block font-medium mb-1">
-First Name
-</label>
+<div>
 
-<input
-className="border p-2 w-full mb-3 rounded"
-onChange={(e)=>setFirstName(e.target.value)}
-/>
+<h2 className="text-xl font-semibold">
+Dr. {profile.firstName} {profile.lastName}
+</h2>
 
-<label className="block font-medium mb-1">
-Last Name
-</label>
-
-<input
-className="border p-2 w-full mb-3 rounded"
-onChange={(e)=>setLastName(e.target.value)}
-/>
-
-<label className="block font-medium mb-1">
-Current Email
-</label>
-
-<p className="text-gray-600 mb-2">
-doctor@example.com
+<p className="text-gray-500 text-sm">
+Click photo to change
 </p>
 
-<label className="block font-medium mb-1">
-Update Email
-</label>
+</div>
+
+</div>
+
+<button
+onClick={editProfile}
+className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
+>
+Edit Profile
+</button>
+
+</div>
+
+{/* Profile Info */}
+
+<div className="grid grid-cols-2 gap-6">
+
+<div>
+<p className="text-gray-500 text-sm">First Name</p>
+<p className="font-semibold">{profile.firstName}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Last Name</p>
+<p className="font-semibold">{profile.lastName}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Email</p>
+<p className="font-semibold">{profile.email}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Phone</p>
+<p className="font-semibold">{profile.phone}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Specialization</p>
+<p className="font-semibold">{profile.specialization}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Experience</p>
+<p className="font-semibold">{profile.experience} years</p>
+</div>
+
+<div className="col-span-2">
+<p className="text-gray-500 text-sm">Clinic Address</p>
+<p className="font-semibold">{profile.clinicAddress}</p>
+</div>
+
+</div>
+
+</div>
+
+)}
+
+{/* EDIT MODE */}
+
+{editMode && (
+
+<div>
+
+<h2 className="text-lg font-semibold mb-6">
+Edit Profile
+</h2>
+
+<label className="block mb-6">
+
+<p className="text-sm text-gray-500 mb-2">
+Upload Profile Picture
+</p>
 
 <input
-className="border p-2 w-full mb-3 rounded"
-onChange={(e)=>setEmail(e.target.value)}
+type="file"
+accept="image/*"
+onChange={handleImage}
+className="block w-full text-sm text-gray-500
+file:mr-4 file:py-2 file:px-4
+file:rounded-lg file:border-0
+file:bg-blue-600 file:text-white
+hover:file:bg-blue-700"
 />
 
-<label className="block font-medium mb-1">
-Designation
 </label>
 
+<div className="grid grid-cols-2 gap-4 mb-4">
+
 <input
-placeholder="Cardiologist / Dentist"
-className="border p-2 w-full mb-4 rounded"
-onChange={(e)=>setDesignation(e.target.value)}
+name="firstName"
+placeholder="First Name"
+value={formData.firstName}
+onChange={handleChange}
+className="border p-2 rounded"
 />
+
+<input
+name="lastName"
+placeholder="Last Name"
+value={formData.lastName}
+onChange={handleChange}
+className="border p-2 rounded"
+/>
+
+</div>
+
+<input
+name="email"
+placeholder="Email"
+value={formData.email}
+onChange={handleChange}
+className="border p-2 rounded w-full mb-4"
+/>
+
+<input
+name="phone"
+placeholder="Phone Number"
+value={formData.phone}
+onChange={handleChange}
+className="border p-2 rounded w-full mb-4"
+/>
+
+<div className="grid grid-cols-2 gap-4 mb-4">
+
+<input
+name="specialization"
+placeholder="Specialization"
+value={formData.specialization}
+onChange={handleChange}
+className="border p-2 rounded"
+/>
+
+<input
+name="experience"
+placeholder="Experience (years)"
+value={formData.experience}
+onChange={handleChange}
+className="border p-2 rounded"
+/>
+
+</div>
+
+<textarea
+name="clinicAddress"
+placeholder="Clinic Address"
+value={formData.clinicAddress}
+onChange={handleChange}
+className="border p-2 rounded w-full mb-4"
+/>
+
+<div className="flex gap-3">
 
 <button
 onClick={saveProfile}
-className="bg-blue-600 text-white px-4 py-2 rounded"
+className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
 >
 Save Profile
 </button>
+
+<button
+onClick={()=>setEditMode(false)}
+className="bg-gray-300 px-6 py-2 rounded-lg"
+>
+Cancel
+</button>
+
+</div>
+
+</div>
+
+)}
 
 </div>
 

@@ -3,12 +3,15 @@ import PatientLayout from "../PatientLayout"
 
 function Profile(){
 
-const user = JSON.parse(localStorage.getItem("currentUser")) || {}
+const user = JSON.parse(localStorage.getItem("currentUser"))
 
-const [profile,setProfile] = useState({
+const [profile,setProfile] = useState(null)
+const [editMode,setEditMode] = useState(false)
+
+const [formData,setFormData] = useState({
 firstName:"",
 lastName:"",
-email:"",
+email:user?.email || "",
 phone:"",
 age:"",
 gender:"",
@@ -18,56 +21,87 @@ photo:""
 
 useEffect(()=>{
 
-const stored = JSON.parse(localStorage.getItem("patientProfile"))
+const savedProfile = JSON.parse(localStorage.getItem("patientProfile"))
 
-if(stored){
-setProfile(stored)
+if(savedProfile){
+setProfile(savedProfile)
+setFormData(savedProfile)
 }else{
-setProfile({
-firstName:user?.name || "",
-lastName:"",
-email:user?.email || "",
-phone:"",
-age:"",
-gender:"",
-address:"",
-photo:""
-})
+setEditMode(true)
 }
 
 },[])
 
 const handleChange = (e)=>{
-
-setProfile({
-...profile,
+setFormData({
+...formData,
 [e.target.name]:e.target.value
 })
-
 }
 
-const handlePhoto = (e)=>{
+const handleImage = (e)=>{
 
 const file = e.target.files[0]
+
+if(!file) return
 
 const reader = new FileReader()
 
 reader.onloadend = ()=>{
-setProfile({...profile,photo:reader.result})
+setFormData({
+...formData,
+photo:reader.result
+})
 }
 
-if(file){
 reader.readAsDataURL(file)
+
 }
 
+const handleAvatarUpload = (e)=>{
+
+const file = e.target.files[0]
+
+if(!file) return
+
+const reader = new FileReader()
+
+reader.onloadend = ()=>{
+
+const updatedProfile = {
+...(profile || formData),
+photo:reader.result
+}
+
+localStorage.setItem("patientProfile",JSON.stringify(updatedProfile))
+
+setProfile(updatedProfile)
+setFormData(updatedProfile)
+
+}
+
+reader.readAsDataURL(file)
+
+}
+
+const triggerFileInput = ()=>{
+document.getElementById("avatarUpload").click()
 }
 
 const saveProfile = ()=>{
 
-localStorage.setItem("patientProfile",JSON.stringify(profile))
+localStorage.setItem("patientProfile",JSON.stringify(formData))
 
-alert("Profile Updated")
+setProfile(formData)
 
+setEditMode(false)
+
+alert("Profile Saved")
+
+}
+
+const editProfile = ()=>{
+setEditMode(true)
 }
 
 return(
@@ -78,82 +112,197 @@ return(
 My Profile
 </h1>
 
-<div className="bg-white p-8 rounded-xl shadow max-w-3xl">
+<div className="bg-white rounded-xl shadow p-8 max-w-4xl">
 
-{/* Profile Image */}
+{/* VIEW MODE */}
 
-<div className="flex items-center gap-6 mb-6">
+{!editMode && profile && (
 
-<img
-src={profile.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png"}
-className="w-24 h-24 rounded-full object-cover border"
+<div>
+
+<div className="flex items-center justify-between mb-8">
+
+<div className="flex items-center gap-4">
+
+{/* Hidden input for avatar upload */}
+
+<input
+type="file"
+accept="image/*"
+id="avatarUpload"
+className="hidden"
+onChange={handleAvatarUpload}
 />
 
-<input type="file" onChange={handlePhoto}/>
+{/* Avatar */}
+
+<div
+onClick={triggerFileInput}
+className="cursor-pointer"
+>
+
+{profile.photo ? (
+
+<img
+src={profile.photo}
+className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+/>
+
+) : (
+
+<div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold">
+{profile.firstName?.charAt(0)}
+</div>
+
+)}
 
 </div>
 
+<div>
 
-{/* Name */}
+<h2 className="text-xl font-semibold">
+{profile.firstName} {profile.lastName}
+</h2>
+
+
+</div>
+
+</div>
+
+<button
+onClick={editProfile}
+className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
+>
+Edit Profile
+</button>
+
+</div>
+
+{/* Profile Info */}
+
+<div className="grid grid-cols-2 gap-6">
+
+<div>
+<p className="text-gray-500 text-sm">First Name</p>
+<p className="font-semibold">{profile.firstName}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Last Name</p>
+<p className="font-semibold">{profile.lastName}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Email</p>
+<p className="font-semibold">{profile.email}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Phone</p>
+<p className="font-semibold">{profile.phone}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Age</p>
+<p className="font-semibold">{profile.age}</p>
+</div>
+
+<div>
+<p className="text-gray-500 text-sm">Gender</p>
+<p className="font-semibold">{profile.gender}</p>
+</div>
+
+<div className="col-span-2">
+<p className="text-gray-500 text-sm">Address</p>
+<p className="font-semibold">{profile.address}</p>
+</div>
+
+</div>
+
+</div>
+
+)}
+
+{/* EDIT MODE */}
+
+{editMode && (
+
+<div>
+
+<h2 className="text-lg font-semibold mb-6">
+Edit Profile
+</h2>
+
+{/* Styled file upload */}
+
+<label className="block mb-6">
+
+<p className="text-sm text-gray-500 mb-2">
+Upload Profile Picture
+</p>
+
+<input
+type="file"
+accept="image/*"
+onChange={handleImage}
+className="block w-full text-sm text-gray-500
+file:mr-4 file:py-2 file:px-4
+file:rounded-lg file:border-0
+file:bg-blue-600 file:text-white
+hover:file:bg-blue-700"
+/>
+
+</label>
 
 <div className="grid grid-cols-2 gap-4 mb-4">
 
 <input
 name="firstName"
-value={profile.firstName}
-onChange={handleChange}
 placeholder="First Name"
+value={formData.firstName}
+onChange={handleChange}
 className="border p-2 rounded"
 />
 
 <input
 name="lastName"
-value={profile.lastName}
-onChange={handleChange}
 placeholder="Last Name"
+value={formData.lastName}
+onChange={handleChange}
 className="border p-2 rounded"
 />
 
 </div>
 
-
-{/* Email */}
-
 <input
 name="email"
-value={profile.email}
-onChange={handleChange}
 placeholder="Email"
+value={formData.email}
+onChange={handleChange}
 className="border p-2 rounded w-full mb-4"
 />
-
-
-{/* Phone */}
 
 <input
 name="phone"
-value={profile.phone}
-onChange={handleChange}
 placeholder="Phone Number"
+value={formData.phone}
+onChange={handleChange}
 className="border p-2 rounded w-full mb-4"
 />
-
-
-{/* Age + Gender */}
 
 <div className="grid grid-cols-2 gap-4 mb-4">
 
 <input
 name="age"
-value={profile.age}
-onChange={handleChange}
 placeholder="Age"
+value={formData.age}
+onChange={handleChange}
 className="border p-2 rounded"
 />
 
 <select
 name="gender"
-value={profile.gender}
+value={formData.gender}
 onChange={handleChange}
 className="border p-2 rounded"
 >
@@ -166,19 +315,15 @@ className="border p-2 rounded"
 
 </div>
 
-
-{/* Address */}
-
 <textarea
 name="address"
-value={profile.address}
-onChange={handleChange}
 placeholder="Address"
+value={formData.address}
+onChange={handleChange}
 className="border p-2 rounded w-full mb-4"
 />
 
-
-{/* Save */}
+<div className="flex gap-3">
 
 <button
 onClick={saveProfile}
@@ -186,6 +331,19 @@ className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700"
 >
 Save Profile
 </button>
+
+<button
+onClick={()=>setEditMode(false)}
+className="bg-gray-300 px-6 py-2 rounded-lg"
+>
+Cancel
+</button>
+
+</div>
+
+</div>
+
+)}
 
 </div>
 

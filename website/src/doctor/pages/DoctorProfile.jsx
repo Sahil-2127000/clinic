@@ -21,13 +21,31 @@ photo:""
 
 useEffect(()=>{
 
-const savedProfile = JSON.parse(localStorage.getItem("doctorProfile"))
+const savedProfile = JSON.parse(
+localStorage.getItem(`doctorProfile_${user?.email}`)
+)
 
 if(savedProfile){
+
 setProfile(savedProfile)
 setFormData(savedProfile)
+
 }else{
-setEditMode(true)
+
+const defaultProfile = {
+firstName:user?.name?.split(" ")[0] || "",
+lastName:user?.name?.split(" ")[1] || "",
+email:user?.email || "",
+phone:"",
+specialization:"",
+experience:"",
+clinicAddress:"",
+photo:""
+}
+
+setProfile(defaultProfile)
+setFormData(defaultProfile)
+
 }
 
 },[])
@@ -42,7 +60,6 @@ setFormData({
 const handleImage = (e)=>{
 
 const file = e.target.files[0]
-
 if(!file) return
 
 const reader = new FileReader()
@@ -61,7 +78,6 @@ reader.readAsDataURL(file)
 const handleAvatarUpload = (e)=>{
 
 const file = e.target.files[0]
-
 if(!file) return
 
 const reader = new FileReader()
@@ -73,7 +89,10 @@ const updatedProfile = {
 photo:reader.result
 }
 
-localStorage.setItem("doctorProfile",JSON.stringify(updatedProfile))
+localStorage.setItem(
+`doctorProfile_${user?.email}`,
+JSON.stringify(updatedProfile)
+)
 
 setProfile(updatedProfile)
 setFormData(updatedProfile)
@@ -90,18 +109,16 @@ document.getElementById("avatarUpload").click()
 
 const saveProfile = ()=>{
 
-localStorage.setItem("doctorProfile",JSON.stringify(formData))
+localStorage.setItem(
+`doctorProfile_${user?.email}`,
+JSON.stringify(formData)
+)
 
 setProfile(formData)
-
 setEditMode(false)
 
 alert("Profile Saved")
 
-}
-
-const editProfile = ()=>{
-setEditMode(true)
 }
 
 return(
@@ -136,25 +153,52 @@ className="hidden"
 onChange={handleAvatarUpload}
 />
 
+{/* Avatar */}
+
 <div
 onClick={triggerFileInput}
-className="cursor-pointer"
+className="cursor-pointer relative w-20 h-20"
 >
 
 {profile.photo ? (
 
 <img
 src={profile.photo}
-className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
+className="w-20 h-20 rounded-full object-cover border-2 border-blue-500"
 />
 
-) : (
+):( 
 
-<div className="w-16 h-16 rounded-full bg-blue-500 flex items-center justify-center text-white text-xl font-bold">
+<div className="w-20 h-20 rounded-full bg-blue-500 flex items-center justify-center text-white text-2xl font-bold">
 {profile.firstName?.charAt(0)}
 </div>
 
 )}
+
+{/* Camera Icon */}
+
+<div className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow">
+
+<svg
+xmlns="http://www.w3.org/2000/svg"
+className="w-5 h-5 text-gray-600"
+fill="none"
+viewBox="0 0 24 24"
+stroke="currentColor"
+>
+
+<path
+strokeLinecap="round"
+strokeLinejoin="round"
+strokeWidth="2"
+d="M3 7h4l2-2h6l2 2h4v12H3V7z"
+/>
+
+<circle cx="12" cy="13" r="3"/>
+
+</svg>
+
+</div>
 
 </div>
 
@@ -164,8 +208,8 @@ className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
 Dr. {profile.firstName} {profile.lastName}
 </h2>
 
-<p className="text-gray-500 text-sm">
-Click photo to change
+<p className="text-gray-500">
+{profile.specialization}
 </p>
 
 </div>
@@ -173,7 +217,7 @@ Click photo to change
 </div>
 
 <button
-onClick={editProfile}
+onClick={()=>setEditMode(true)}
 className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
 >
 Edit Profile

@@ -35,6 +35,26 @@ window.removeEventListener("appointmentsUpdated", loadAppointments)
 
 },[])
 
+
+const addPrescription = (patientEmail) => {
+
+const prescriptions =
+JSON.parse(localStorage.getItem("prescriptions")) || []
+
+const newPrescription = {
+id: Date.now(),
+patientEmail: patientEmail,
+medicine: "Paracetamol 500mg",
+timing: "Morning • Afternoon • Night",
+date: new Date().toLocaleDateString("en-GB")
+}
+
+prescriptions.push(newPrescription)
+
+localStorage.setItem("prescriptions", JSON.stringify(prescriptions))
+
+}
+
 return(
 
 <div className="flex bg-gray-50 min-h-screen">

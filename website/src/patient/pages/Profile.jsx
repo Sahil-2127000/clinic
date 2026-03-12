@@ -1,130 +1,132 @@
-import { useState, useEffect } from "react"
-import PatientLayout from "../PatientLayout"
+import { useState, useEffect } from "react";
+import PatientLayout from "../PatientLayout";
 
-function Profile(){
+function Profile() {
+const user = JSON.parse(localStorage.getItem("currentUser"));
 
-const user = JSON.parse(localStorage.getItem("currentUser"))
+const [profile, setProfile] = useState(null);
+const [editMode, setEditMode] = useState(false);
 
-const [profile,setProfile] = useState(null)
-const [editMode,setEditMode] = useState(false)
+const [formData, setFormData] = useState({
+firstName: "",
+lastName: "",
+email: user?.email || "",
+phone: "",
+age: "",
+gender: "",
+address: "",
+photo: "",
+});
 
-const [formData,setFormData] = useState({
-firstName:"",
-lastName:"",
-email:user?.email || "",
-phone:"",
-age:"",
-gender:"",
-address:"",
-photo:""
-})
+useEffect(() => {
+const savedProfile = JSON.parse(
+localStorage.getItem(`patientProfile_${user?.email}`)
+);
 
-useEffect(()=>{
+if (savedProfile) {
+setProfile(savedProfile);
+setFormData(savedProfile);
+} else {
+const defaultProfile = {
+firstName: user?.name?.split(" ")[0] || "",
+lastName: user?.name?.split(" ")[1] || "",
+email: user?.email || "",
+phone: "",
+age: "",
+gender: "",
+address: "",
+photo: "",
+};
 
-const savedProfile = JSON.parse(localStorage.getItem("patientProfile"))
-
-if(savedProfile){
-setProfile(savedProfile)
-setFormData(savedProfile)
-}else{
-setEditMode(true)
+setFormData(defaultProfile);
+setProfile(defaultProfile);
 }
+}, []);
 
-},[])
-
-const handleChange = (e)=>{
+const handleChange = (e) => {
 setFormData({
 ...formData,
-[e.target.name]:e.target.value
-})
-}
+[e.target.name]: e.target.value,
+});
+};
 
-const handleImage = (e)=>{
+const handleImage = (e) => {
+const file = e.target.files[0];
 
-const file = e.target.files[0]
+if (!file) return;
 
-if(!file) return
+const reader = new FileReader();
 
-const reader = new FileReader()
-
-reader.onloadend = ()=>{
+reader.onloadend = () => {
 setFormData({
 ...formData,
-photo:reader.result
-})
-}
+photo: reader.result,
+});
+};
 
-reader.readAsDataURL(file)
+reader.readAsDataURL(file);
+};
 
-}
+const handleAvatarUpload = (e) => {
+const file = e.target.files[0];
 
-const handleAvatarUpload = (e)=>{
+if (!file) return;
 
-const file = e.target.files[0]
+const reader = new FileReader();
 
-if(!file) return
-
-const reader = new FileReader()
-
-reader.onloadend = ()=>{
-
+reader.onloadend = () => {
 const updatedProfile = {
 ...(profile || formData),
-photo:reader.result
-}
+photo: reader.result,
+};
 
-localStorage.setItem("patientProfile",JSON.stringify(updatedProfile))
+localStorage.setItem(
+`patientProfile_${user?.email}`,
+JSON.stringify(updatedProfile)
+);
 
-setProfile(updatedProfile)
-setFormData(updatedProfile)
+setProfile(updatedProfile);
+setFormData(updatedProfile);
+};
 
-}
+reader.readAsDataURL(file);
+};
 
-reader.readAsDataURL(file)
+const triggerFileInput = () => {
+document.getElementById("avatarUpload").click();
+};
 
-}
+const saveProfile = () => {
+localStorage.setItem(
+`patientProfile_${user?.email}`,
+JSON.stringify(formData)
+);
 
-const triggerFileInput = ()=>{
-document.getElementById("avatarUpload").click()
-}
+setProfile(formData);
 
-const saveProfile = ()=>{
+setEditMode(false);
 
-localStorage.setItem("patientProfile",JSON.stringify(formData))
+alert("Profile Saved");
+};
 
-setProfile(formData)
+const editProfile = () => {
+setEditMode(true);
+};
 
-setEditMode(false)
-
-alert("Profile Saved")
-
-}
-
-const editProfile = ()=>{
-setEditMode(true)
-}
-
-return(
-
+return (
 <PatientLayout>
-
-<h1 className="text-2xl font-bold mb-6">
-My Profile
-</h1>
+<h1 className="text-2xl font-bold mb-6">My Profile</h1>
 
 <div className="bg-white rounded-xl shadow p-8 max-w-4xl">
 
 {/* VIEW MODE */}
 
 {!editMode && profile && (
-
 <div>
 
 <div className="flex items-center justify-between mb-8">
 
 <div className="flex items-center gap-4">
-
-{/* Hidden input for avatar upload */}
 
 <input
 type="file"
@@ -134,11 +136,11 @@ className="hidden"
 onChange={handleAvatarUpload}
 />
 
-{/* Avatar */}
+{/* Avatar with Camera Icon */}
 
 <div
 onClick={triggerFileInput}
-className="cursor-pointer"
+className="cursor-pointer relative w-16 h-16"
 >
 
 {profile.photo ? (
@@ -156,15 +158,37 @@ className="w-16 h-16 rounded-full object-cover border-2 border-blue-500"
 
 )}
 
+{/* Camera Icon */}
+
+<div className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow">
+
+<svg
+xmlns="http://www.w3.org/2000/svg"
+className="w-4 h-4 text-gray-600"
+fill="none"
+viewBox="0 0 24 24"
+stroke="currentColor"
+>
+
+<path
+strokeLinecap="round"
+strokeLinejoin="round"
+strokeWidth="2"
+d="M3 7h4l2-2h6l2 2h4v12H3V7z"
+/>
+
+<circle cx="12" cy="13" r="3" />
+
+</svg>
+
+</div>
+
 </div>
 
 <div>
-
 <h2 className="text-xl font-semibold">
 {profile.firstName} {profile.lastName}
 </h2>
-
-
 </div>
 
 </div>
@@ -220,20 +244,16 @@ Edit Profile
 </div>
 
 </div>
-
 )}
 
 {/* EDIT MODE */}
 
 {editMode && (
-
 <div>
 
 <h2 className="text-lg font-semibold mb-6">
 Edit Profile
 </h2>
-
-{/* Styled file upload */}
 
 <label className="block mb-6">
 
@@ -333,7 +353,7 @@ Save Profile
 </button>
 
 <button
-onClick={()=>setEditMode(false)}
+onClick={() => setEditMode(false)}
 className="bg-gray-300 px-6 py-2 rounded-lg"
 >
 Cancel
@@ -342,15 +362,11 @@ Cancel
 </div>
 
 </div>
-
 )}
 
 </div>
-
 </PatientLayout>
-
-)
-
+);
 }
 
-export default Profile
+export default Profile;

@@ -48,7 +48,7 @@ Book Appointment
 
 {/* Hero Section */}
 
-<section className="bg-white py-20">
+<section className="bg-white py-20 relative transform-3d ">
 
 <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center">
 
@@ -62,7 +62,7 @@ Dr. M.V. Sharma Clinic
 
 </h2>
 
-<p className="mt-4 text-lg text-gray-600">
+<p className="mt-4 text-lg text-gray-600 z-10">
 
 Personalized healthcare and expert consultation for you and your family.
 
@@ -86,12 +86,12 @@ Request Appointment
 
 {/* Right Graphic */}
 
-<div className="flex justify-center">
+<div className="flex justify-center  relative gap-1 scale-150 right-[14rem] z-0">
 
 <img
-src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"
+src="/stethoscope.png"
 alt="stethoscope"
-className="rounded-xl shadow-lg"
+className=""
 />
 
 </div>

@@ -69,7 +69,7 @@ function LandingPage() {
 
           {/* Right Graphic */}
 
-          <div className="flex justify-center  relative gap-1 scale-150 right-[10rem] z-0">
+          <div className="flex justify-center  relative gap-1 scale-150 right-40 z-0">
             <img src="/stethoscope.png" alt="stethoscope" className="" />
           </div>
         </div>
@@ -86,7 +86,7 @@ function LandingPage() {
 
       {/* About Doctor Section */}
 
-      <section className="bg-white py-16 my-[-5rem]">
+      <section className="bg-white py-16 my-20">
         <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center ">
           <img src="/about.jpg" className="rounded-xl shadow" />
 

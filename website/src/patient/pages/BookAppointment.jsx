@@ -76,6 +76,15 @@ function BookAppointment() {
   /* ------------------- BOOK APPOINTMENT ------------------- */
 
   const bookAppointment = () => {
+    if (isOffDay) {
+      alert("Doctor is not available on this day");
+      return;
+    }
+
+    if (!name || !age || !gender || !date || !selectedSlot) {
+      alert("Please fill all fields");
+      return;
+    }
     if (!user) {
       alert("User not logged in");
       return;

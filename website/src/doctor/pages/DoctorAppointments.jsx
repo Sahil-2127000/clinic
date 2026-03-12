@@ -79,7 +79,18 @@ No appointments yet
 </p>
 )}
 
-{appointments.map(a=>(
+
+{appointments
+.sort((a,b)=>{
+const [d1,m1,y1] = a.date.split("-").map(Number)
+const [d2,m2,y2] = b.date.split("-").map(Number)
+
+const date1 = new Date(y1, m1-1, d1, ...a.time.split(":").map(Number))
+const date2 = new Date(y2, m2-1, d2, ...b.time.split(":").map(Number))
+
+return date1 - date2
+})
+.map(a=>(
 
 <div key={a.id} className="flex justify-between border-b py-3 items-center">
 

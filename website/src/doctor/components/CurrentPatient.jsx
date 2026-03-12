@@ -27,8 +27,15 @@ window.removeEventListener("appointmentsUpdated", loadAppointments)
 },[])
 
 // approved appointments act as queue
+// get today's date in same format (dd-mm-yyyy)
+const today = new Date()
+const todayDate = today.toLocaleDateString("en-GB")
+
+// approved appointments only for today
 const approvedAppointments =
-appointments.filter(a => a.status === "approved")
+appointments.filter(a =>
+a.status === "approved" && a.date === todayDate
+)
 
 const currentPatient = approvedAppointments[0]
 const nextPatient = approvedAppointments[1]

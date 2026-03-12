@@ -54,6 +54,17 @@ function PatientSidebar() {
           </NavLink>
 
           <NavLink
+            to="/patient/book"
+            className={({ isActive }) =>
+              `p-4 rounded-xl ${
+                isActive ? "bg-blue-500 text-white" : "hover:bg-gray-100"
+              }`
+            }
+          >
+            Book Appointment
+          </NavLink>
+
+          <NavLink
             to="/patient/appointments"
             className={({ isActive }) =>
               `p-4 rounded-xl ${
@@ -63,6 +74,8 @@ function PatientSidebar() {
           >
             Appointments
           </NavLink>
+          
+
 
           <NavLink
             to="/patient/profile"

@@ -16,11 +16,11 @@ return(
 <div className="text-center mb-8">
 
 <img
-src="https://randomuser.me/api/portraits/men/32.jpg"
-className="w-20 h-20 rounded-full mx-auto"
+src="/about.jpg"
+className="w-30 h-30 rounded-full mx-auto object-cover border-[1px]"
 />
 
-<h3 className="mt-3 font-semibold">Dr. Martin Deo</h3>
+<h3 className="mt-3 font-semibold">Dr. M.V. Sharma</h3>
 <p className="text-sm text-gray-500">MBBS, MD</p>
 </div>
 

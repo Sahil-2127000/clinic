@@ -3,9 +3,9 @@ import PatientLayout from "../PatientLayout"
 
 function Appointments(){
 
-const [appointments,setAppointments] = useState([])
+// const [appointments,setAppointments] = useState([])
 
-const user = JSON.parse(localStorage.getItem("currentUser"))
+// const user = JSON.parse(localStorage.getItem("currentUser"))
 
 useEffect(()=>{
 
@@ -31,6 +31,88 @@ return ""
 
 }
 
+
+// COpied
+const user = JSON.parse(localStorage.getItem("currentUser"));
+
+  const [appointments, setAppointments] = useState([]);
+
+  useEffect(() => {
+    const loadAppointments = () => {
+      const data = JSON.parse(localStorage.getItem("appointments")) || [];
+      setAppointments(data);
+    };
+
+    // initial load
+    loadAppointments();
+
+    // listen for updates
+    window.addEventListener("appointmentsUpdated", loadAppointments);
+
+    return () =>
+      window.removeEventListener("appointmentsUpdated", loadAppointments);
+  }, []);
+
+  // appointments of this patient
+  const myAppointments = appointments.filter(
+    (a) => a.accountEmail === user?.email,
+  );
+
+  const now = new Date();
+
+  // UPCOMING
+  const upcoming = myAppointments.filter((a) => {
+    if (a.status !== "approved") return false;
+
+    const [day, month, year] = a.date.split("-").map(Number);
+    const [hour, minute] = a.time.split(":").map(Number);
+
+    const appointmentDate = new Date(year, month - 1, day, hour, minute);
+
+    return appointmentDate > now;
+  });
+
+  // COMPLETED
+  const completed = myAppointments.filter((a) => {
+    if (a.status === "completed") return true;
+
+    if (a.status !== "approved") return false;
+
+    const [day, month, year] = a.date.split("-").map(Number);
+    const [hour, minute] = a.time.split(":").map(Number);
+
+    const appointmentDate = new Date(year, month - 1, day, hour, minute);
+
+    return appointmentDate < now;
+  });
+
+  // CANCELLED
+  const cancelled = myAppointments.filter((a) => a.status === "rejected");
+
+  // sort upcoming appointments by date & time
+  const nextAppointment = upcoming.sort((a, b) => {
+    const [d1, m1, y1] = a.date.split("-").map(Number);
+    const [d2, m2, y2] = b.date.split("-").map(Number);
+
+    const date1 = new Date(
+      y1,
+      m1 - 1,
+      d1,
+      a.time.split(":")[0],
+      a.time.split(":")[1],
+    );
+
+    const date2 = new Date(
+      y2,
+      m2 - 1,
+      d2,
+      b.time.split(":")[0],
+      b.time.split(":")[1],
+    );
+
+    return date1 - date2;
+  })[0];
+  //
 return(
 
 <PatientLayout>
@@ -39,54 +121,52 @@ return(
 My Appointments
 </h1>
 
-<div className="bg-white rounded-xl shadow p-6">
+<div className="bg-white p-6 rounded-xl shadow">
+        {/* <h2 className="text-xl font-semibold mb-4">Recent Appointments</h2> */}
 
-{appointments.length === 0 ? (
+        {myAppointments.length === 0 ? (
+          <p className="text-gray-500">No appointments yet</p>
+        ) : (
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b text-gray-500">
+                <th className="py-2">Patient</th>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Status</th>
+              </tr>
+            </thead>
 
-<p className="text-gray-500">
-No appointments booked yet
-</p>
+            <tbody>
+              {myAppointments
+                .slice(-5)
+                .reverse()
+                .map((a) => (
+                  <tr key={a.id} className="border-b">
+                    <td className="py-2">{a.name}</td>
+                    <td>{a.date}</td>
+                    <td>{a.time}</td>
 
-) : (
+                    <td>
+                      <span
+                        className={`px-2 py-1 rounded text-sm
 
-appointments.map((a)=>(
-<div
-key={a.id}
-className="flex justify-between items-center border-b py-4"
->
+${a.status === "approved" && "bg-green-300 text-black-600"}
+${a.status === "pending" && "bg-yellow-400 text-black-600"}
+${a.status === "completed" && "bg-gray-300 text-black-900"}
+${a.status === "rejected" && "bg-red-200 text-black-600"}
 
-<div>
-
-<p className="font-semibold text-lg">
-{a.name}
-</p>
-
-<p className="text-sm text-gray-500">
-Age: {a.age} • {a.gender}
-</p>
-
-<p className="text-sm text-gray-500">
-Date: {a.date}
-</p>
-
-<p className="text-sm text-gray-500">
-Time: {a.time}
-</p>
-
-</div>
-
-<span
-className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(a.status)}`}
->
-{a.status}
-</span>
-
-</div>
-))
-
-)}
-
-</div>
+`}
+                      >
+                        {a.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
 </PatientLayout>
 

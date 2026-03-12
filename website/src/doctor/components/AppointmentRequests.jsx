@@ -9,7 +9,6 @@ const loadAppointments = () => {
 const data =
 JSON.parse(localStorage.getItem("appointments")) || []
 
-// show only pending appointments
 const pending = data.filter(a => a.status === "pending")
 
 setAppointments(pending)
@@ -18,10 +17,8 @@ setAppointments(pending)
 
 useEffect(()=>{
 
-// load initially
 loadAppointments()
 
-// listen for updates
 window.addEventListener("appointmentsUpdated", loadAppointments)
 
 return () =>
@@ -31,24 +28,21 @@ window.removeEventListener("appointmentsUpdated", loadAppointments)
 
 const updateStatus = (id,status)=>{
 
-let allAppointments =
+let all =
 JSON.parse(localStorage.getItem("appointments")) || []
 
-// update status
-allAppointments = allAppointments.map(a => {
+all = all.map(a=>{
 
 if(a.id === id){
-return {...a, status: status}
+return {...a,status}
 }
 
 return a
 
 })
 
-// save updated appointments
-localStorage.setItem("appointments", JSON.stringify(allAppointments))
+localStorage.setItem("appointments",JSON.stringify(all))
 
-// trigger dashboard update
 window.dispatchEvent(new Event("appointmentsUpdated"))
 
 }
@@ -62,15 +56,17 @@ Appointment Requests
 </h3>
 
 {appointments.length === 0 && (
-<p className="text-gray-500">No pending requests</p>
+<p className="text-gray-500">
+No pending requests
+</p>
 )}
 
 {appointments.map(a=>(
-<div key={a.id} className="flex justify-between items-center border-b py-3">
+
+<div key={a.id} className="flex justify-between border-b py-3">
 
 <div>
 <p className="font-semibold">{a.name}</p>
-<p className="text-sm text-gray-500">{a.age} yrs • {a.gender}</p>
 <p className="text-sm text-gray-500">
 {a.date} • {a.time}
 </p>
@@ -95,6 +91,7 @@ Reject
 </div>
 
 </div>
+
 ))}
 
 </div>

@@ -1,23 +1,13 @@
-import PatientSidebar from "./components/PatientSidebar"
+import PatientSidebar from "./components/PatientSidebar";
 
-function PatientLayout({children}){
+function PatientLayout({ children }) {
+  return (
+    <div className="flex bg-gray-50 min-h-screen">
+      <PatientSidebar />
 
-return(
-
-<div className="flex bg-gray-50 min-h-screen">
-
-<PatientSidebar/>
-
-<div className="flex-1 p-8">
-
-{children}
-
-</div>
-
-</div>
-
-)
-
+      <div className="flex-1 p-8">{children}</div>
+    </div>
+  );
 }
 
-export default PatientLayout
+export default PatientLayout;

@@ -7,6 +7,10 @@ import CurrentPatient from "../components/CurrentPatient"
 
 function DoctorDashboard(){
 
+    useEffect(()=>{
+    document.title = "Doctor Dashboard | Dr. M.V. Sharma Clinic"
+    },[])
+
 const [appointments,setAppointments] = useState([])
 
 const loadAppointments = () => {

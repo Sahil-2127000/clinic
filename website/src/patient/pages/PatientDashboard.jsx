@@ -1,9 +1,14 @@
+import { useEffect } from "react"
 import PatientLayout from "../PatientLayout"
 
 function PatientDashboard(){
 
 const user = JSON.parse(localStorage.getItem("currentUser"))
 
+useEffect(()=>{
+    document.title = "Patient Dashboard | Dr. M.V. Sharma Clinic"
+    },[])
+    
 return(
 
 <PatientLayout>

@@ -1,6 +1,11 @@
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 
 function LandingPage(){
+
+    useEffect(()=>{
+        document.title = "Dr. M.V. Sharma Clinic"
+        },[])
 
 const navigate = useNavigate()
 
@@ -113,7 +118,7 @@ className="rounded-xl shadow-lg"
 <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center ">
 
 <img
-src="/"
+src="/about.jpg"
 className="rounded-xl shadow"
 />
 
@@ -201,14 +206,72 @@ Book appointments quickly through the online system.
 
 {/* Footer */}
 
-<footer className="bg-gray-900 text-white py-6 text-center">
+{/* Footer */}
 
-<p>
-© 2026 Dr. M.V. Sharma Clinic
+<footer className="bg-gray-900 text-white py-10">
+
+<div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-8">
+
+{/* Clinic Info */}
+
+<div>
+<h3 className="text-xl font-semibold mb-3">
+Dr. M.V. Sharma Clinic
+</h3>
+
+<p className="text-gray-400">
+Providing trusted healthcare consultation and personalized
+treatment for patients.
+</p>
+</div>
+
+
+{/* Contact Details */}
+
+<div>
+<h3 className="text-xl font-semibold mb-3">
+Contact
+</h3>
+
+<p className="text-gray-400">
+📞 Phone: 7707821270
 </p>
 
-</footer>
+<p className="text-gray-400">
+📧 Email: mauryasahil013@gmail.com
+</p>
 
+</div>
+
+
+{/* Address */}
+
+<div>
+<h3 className="text-xl font-semibold mb-3">
+Clinic Address
+</h3>
+
+<p className="text-gray-400">
+Dr. M.V. Sharma Clinic
+</p>
+
+<p className="text-gray-400">
+GNE College Road
+</p>
+
+<p className="text-gray-400">
+Ludhiana, Punjab
+</p>
+
+</div>
+
+</div>
+
+<div className="text-center text-gray-500 mt-8 border-t border-gray-700 pt-4">
+© 2026 Dr. M.V. Sharma Clinic. All rights reserved.
+</div>
+
+</footer>
 </div>
 
 )

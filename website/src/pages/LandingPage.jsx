@@ -10,7 +10,7 @@ return(
 
 {/* Header */}
 
-<header className="bg-white shadow-sm">
+<header className="bg-[#DBEAFE] shadow-sm">
 
 <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
 
@@ -22,7 +22,7 @@ Dr. M.V. Sharma Clinic
 
 <button
 onClick={()=>navigate("/login")}
-className="px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-50"
+className="bg-white px-4 py-2 border border-blue-500 text-blue-500 rounded-lg hover:bg-blue-5 "
 >
 Login
 </button>
@@ -113,7 +113,7 @@ className="rounded-xl shadow-lg"
 <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-10 items-center ">
 
 <img
-src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2"
+src="/"
 className="rounded-xl shadow"
 />
 
